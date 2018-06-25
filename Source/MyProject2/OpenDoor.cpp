@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OpenDoor.h"
 #include "GameFramework/Actor.h"
+#include "OpenDoor.h"
 
 
 // Sets default values for this component's properties
@@ -19,6 +19,8 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 	
 }
 
