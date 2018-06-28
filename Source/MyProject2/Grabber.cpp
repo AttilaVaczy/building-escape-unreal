@@ -2,7 +2,6 @@
 
 #include "Grabber.h"
 #include "Engine/World.h"
-#include "DrawDebugHelpers.h"
 
 #define OUT
 
@@ -55,9 +54,11 @@ void UGrabber::SetupInputComponent()
 }
 
 
+
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grabbed!"));
+	GetFirstPhysicsBodyReach();
 }
 
 void UGrabber::Release()
@@ -65,22 +66,22 @@ void UGrabber::Release()
 	UE_LOG(LogTemp, Warning, TEXT("Released!"));
 }
 
-
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
 
+const FHitResult UGrabber::GetFirstPhysicsBodyReach()
+{
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewPointLocation, OUT PlayerViewPointRotation);
 
 	FVector LineTrceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 
-	DrawDebugLine(GetWorld(), PlayerViewPointLocation, LineTrceEnd, FColor(255, 0, 0), false, 0.f, 0.f, 10.f);
-
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
-	
+
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByObjectType(
 		OUT Hit,
@@ -88,11 +89,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		LineTrceEnd,
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
 		TraceParameters
-		);
+	);
 	AActor* ActorHit = Hit.GetActor();
 	if (ActorHit)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Line trace hit: %s"), *(ActorHit->GetName()))
 	}
+	return FHitResult();
 }
 
